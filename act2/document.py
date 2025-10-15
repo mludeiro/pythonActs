@@ -2,9 +2,9 @@ from pathlib import Path
 import mimetypes
 import pdfplumber
 import docx
+from abc import ABC, abstractmethod
 
-
-class Document:
+class Document(ABC):
     def __init__(self, filepath: Path):
         self.filepath = filepath
 
@@ -14,6 +14,13 @@ class Document:
         cannot be guessed the value will be None."""
         return mimetypes.guess_type(self.filepath)
 
+    @abstractmethod
+    def text(self) -> str:
+        pass
+
+    @abstractmethod
+    def author(self) -> str:
+        pass
 
 class PDFDocument(Document):
     def __init__(self, filepath: Path):
@@ -34,8 +41,23 @@ class DocXDocument(Document):
         self.document = docx.Document(self.filepath)
 
     @property
-    def docAuthor(self) -> str:
+    def author(self) -> str:
         return self.document.core_properties.author
 
-    def textExtract(self) -> str:
+    def text(self) -> str:
         return "\n".join(para.text for para in self.document.paragraphs)
+    
+if __name__ == "__main__":
+    doc = PDFDocument(Path("A.pdf"))
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(doc.author)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(doc.text())
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
+    doc = DocXDocument(Path("B.docx"))
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(doc.author)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(doc.text())
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<")
