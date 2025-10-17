@@ -1,4 +1,4 @@
-from docreader import Document
+from .document import Document
 from pathlib import Path
 import docx
 
